@@ -1,7 +1,7 @@
 use tui::{
     backend::Backend,
     layout::{Alignment, Constraint, Direction, Layout, Rect},
-    style::{Style, Modifier},
+    style::{Modifier, Style},
     text::{Span, Spans},
     widgets::{Block, Borders, Paragraph, Wrap},
     Frame,
@@ -40,7 +40,8 @@ fn draw_current_note_panel<B: Backend>(f: &mut Frame<B>, layout_chunk: &Rect) {
 
 fn draw_current_note_title<B: Backend>(f: &mut Frame<B>, layout_chunk: Rect) {
     let text = vec![Spans::from(vec![Span::styled(
-        "This is the title of the current note that was selected", Style::default().add_modifier(Modifier::BOLD)
+        "This is the title of the current note that was selected",
+        Style::default().add_modifier(Modifier::BOLD),
     )])];
     let paragraph = Paragraph::new(text)
         .alignment(Alignment::Left)
@@ -52,7 +53,7 @@ fn draw_current_note_title<B: Backend>(f: &mut Frame<B>, layout_chunk: Rect) {
 
 fn draw_current_note_contents<B: Backend>(f: &mut Frame<B>, layout_chunk: Rect) {
     let text = vec![Spans::from(vec![Span::raw(
-        "This is the content of the current note that was selected"
+        "This is the content of the current note that was selected",
     )])];
     let paragraph = Paragraph::new(text)
         .alignment(Alignment::Left)
@@ -64,7 +65,7 @@ fn draw_current_note_contents<B: Backend>(f: &mut Frame<B>, layout_chunk: Rect) 
 
 fn draw_current_note_input<B: Backend>(f: &mut Frame<B>, layout_chunk: Rect) {
     let text = vec![Spans::from(vec![Span::raw(
-        "This is the input of the current note that was selected"
+        "This is the input of the current note that was selected",
     )])];
     let paragraph = Paragraph::new(text)
         .alignment(Alignment::Left)
