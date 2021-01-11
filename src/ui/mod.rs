@@ -14,15 +14,6 @@ pub fn draw<B: Backend>(f: &mut Frame<B>) {
         .constraints([Constraint::Percentage(20), Constraint::Percentage(80)].as_ref())
         .split(f.size());
 
-    /* TODO
-     *
-     * [ ] list of all currently saved notes on the entire left panel spanning the entire size of the
-     *         window vertically
-     * [ ] top of the right side panel is the title of the new/current note
-     * [ ] top middle of the right side panel is the contents of the new/current note
-     * [ ] bottom of the right side panel is the input bar for the new/current note
-     *
-     */
     let notes_list = Block::default().borders(Borders::ALL).title("Notes");
     f.render_widget(notes_list, chunks[0]);
 
