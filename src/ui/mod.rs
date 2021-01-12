@@ -26,8 +26,7 @@ fn draw_current_note_panel<B: Backend>(f: &mut Frame<B>, layout_chunk: &Rect) {
         .constraints(
             [
                 Constraint::Percentage(10),
-                Constraint::Percentage(80),
-                Constraint::Percentage(10),
+                Constraint::Percentage(90),
             ]
             .as_ref(),
         )
@@ -35,7 +34,6 @@ fn draw_current_note_panel<B: Backend>(f: &mut Frame<B>, layout_chunk: &Rect) {
 
     draw_current_note_title(f, parent_layout[0]);
     draw_current_note_contents(f, parent_layout[1]);
-    draw_current_note_input(f, parent_layout[2]);
 }
 
 fn draw_current_note_title<B: Backend>(f: &mut Frame<B>, layout_chunk: Rect) {
@@ -58,18 +56,6 @@ fn draw_current_note_contents<B: Backend>(f: &mut Frame<B>, layout_chunk: Rect) 
     let paragraph = Paragraph::new(text)
         .alignment(Alignment::Left)
         .block(Block::default().borders(Borders::ALL).title("Content"))
-        .wrap(Wrap { trim: true });
-
-    f.render_widget(paragraph, layout_chunk);
-}
-
-fn draw_current_note_input<B: Backend>(f: &mut Frame<B>, layout_chunk: Rect) {
-    let text = vec![Spans::from(vec![Span::raw(
-        "This is the input of the current note that was selected",
-    )])];
-    let paragraph = Paragraph::new(text)
-        .alignment(Alignment::Left)
-        .block(Block::default().borders(Borders::ALL).title("Input"))
         .wrap(Wrap { trim: true });
 
     f.render_widget(paragraph, layout_chunk);
