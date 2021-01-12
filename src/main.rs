@@ -7,6 +7,8 @@ use tui::backend::CrosstermBackend;
 use tui::Terminal;
 
 mod db;
+mod note;
+mod types;
 mod ui;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

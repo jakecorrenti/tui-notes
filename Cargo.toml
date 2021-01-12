@@ -10,3 +10,4 @@ edition = "2018"
 crossterm = "0.18"
 tui = { version = "0.14", default-features = false, features = ['crossterm'] }
 rusqlite = "0.24.2"
+uuid = { version = "0.8", features = ["serde", "v4"] }
