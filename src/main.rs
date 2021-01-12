@@ -10,6 +10,7 @@ mod db;
 mod note;
 mod types;
 mod ui;
+mod notes_list_events;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     db::create_notes_table()?;
