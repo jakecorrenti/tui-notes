@@ -1,4 +1,4 @@
-use super::{db, NoteListEvents, Note};
+use super::{db, Note, NoteListEvents};
 use crossterm::{
     event::{poll, read, Event, KeyCode, KeyModifiers},
     execute,
@@ -24,16 +24,16 @@ pub fn handle_notes_list_events(
                                 let note = db::get_note(selected_note)?;
                                 db::delete_note(note)?;
                             }
-                        },
+                        }
                         KeyCode::Char('n') => {
                             db::insert_note(Note::new())?;
-                        },
+                        }
                         KeyCode::Char('w') => {
                             if let Some(selected_note) = list_state.selected_note_id() {
                                 let note = db::get_note(selected_note)?;
                                 db::update_note(note)?;
                             }
-                        },
+                        }
                         KeyCode::Char('q') => {
                             disable_raw_mode()?;
                             execute!(stdout(), LeaveAlternateScreen)?;

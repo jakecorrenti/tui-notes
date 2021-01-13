@@ -7,7 +7,7 @@ use tui::{
     Frame,
 };
 
-use super::{db, notes_list_events::NoteListEvents};
+use super::{db, note::Note, notes_list_events::NoteListEvents};
 
 pub fn draw<B: Backend>(f: &mut Frame<B>, list_state: &mut NoteListEvents) {
     let chunks = Layout::default()
@@ -18,17 +18,21 @@ pub fn draw<B: Backend>(f: &mut Frame<B>, list_state: &mut NoteListEvents) {
 
     draw_notes_list(f, &chunks[0], list_state);
 
-    draw_current_note_panel(f, &chunks[1]);
+    draw_current_note_panel(f, &chunks[1], list_state);
 }
 
-fn draw_current_note_panel<B: Backend>(f: &mut Frame<B>, layout_chunk: &Rect) {
+fn draw_current_note_panel<B: Backend>(
+    f: &mut Frame<B>,
+    layout_chunk: &Rect,
+    list_state: &mut NoteListEvents,
+) {
     let parent_layout = Layout::default()
         .direction(Direction::Vertical)
         .constraints([Constraint::Percentage(10), Constraint::Percentage(90)].as_ref())
         .split(*layout_chunk);
 
     draw_current_note_title(f, parent_layout[0]);
-    draw_current_note_contents(f, parent_layout[1]);
+    draw_current_note_contents(f, parent_layout[1], list_state);
 }
 
 fn draw_current_note_title<B: Backend>(f: &mut Frame<B>, layout_chunk: Rect) {
@@ -44,11 +48,21 @@ fn draw_current_note_title<B: Backend>(f: &mut Frame<B>, layout_chunk: Rect) {
     f.render_widget(paragraph, layout_chunk);
 }
 
-fn draw_current_note_contents<B: Backend>(f: &mut Frame<B>, layout_chunk: Rect) {
-    let text = vec![Spans::from(vec![Span::raw(
-        "This is the content of the current note that was selected",
-    )])];
-    let paragraph = Paragraph::new(text)
+fn draw_current_note_contents<B: Backend>(
+    f: &mut Frame<B>,
+    layout_chunk: Rect,
+    list_state: &mut NoteListEvents,
+) {
+    let mut text: Vec<Span> = Vec::new();
+    let note: Note;
+
+    if let Some(id) = list_state.selected_note_id() {
+        note = db::get_note(id).expect("Unable to access the current selected note");
+        note.contents.lines().for_each(|line| text.push(Span::raw(line)));
+    }
+
+    let paragraph_contents = vec![Spans::from(text)];
+    let paragraph = Paragraph::new(paragraph_contents)
         .alignment(Alignment::Left)
         .block(Block::default().borders(Borders::ALL).title("Content"))
         .wrap(Wrap { trim: true });
@@ -56,8 +70,11 @@ fn draw_current_note_contents<B: Backend>(f: &mut Frame<B>, layout_chunk: Rect) 
     f.render_widget(paragraph, layout_chunk);
 }
 
-fn draw_notes_list<B: Backend>(f: &mut Frame<B>, layout_chunk: &Rect, list_state: &mut NoteListEvents) {
-
+fn draw_notes_list<B: Backend>(
+    f: &mut Frame<B>,
+    layout_chunk: &Rect,
+    list_state: &mut NoteListEvents,
+) {
     let notes = db::get_all_notes().expect("There was an error retrieving your notes");
 
     notes
