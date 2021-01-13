@@ -1,3 +1,5 @@
+use super::db;
+use super::note::Note;
 use tui::widgets::ListState;
 
 // Struct that handles the state of the list of user's saved notes
@@ -42,9 +44,25 @@ impl NoteListEvents {
                 } else {
                     idx - 1
                 }
-            },
+            }
             None => 0,
         };
         self.state.select(Some(index));
+    }
+
+    pub fn selected_note_id(&mut self) -> Option<String> {
+        if let Some(idx) = self.state.selected() {
+            let notes = db::get_all_notes();
+            let note_id = self.notes[idx].0.clone();
+            let selected_note_obj: Vec<Note> = notes
+                .unwrap()
+                .into_iter()
+                .filter(|note| note.id == note_id)
+                .collect();
+            if let Some(note) = selected_note_obj.first() {
+                return Some(note.id.clone());
+            }
+        }
+        None
     }
 }
