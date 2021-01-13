@@ -31,16 +31,27 @@ fn draw_current_note_panel<B: Backend>(
         .constraints([Constraint::Percentage(10), Constraint::Percentage(90)].as_ref())
         .split(*layout_chunk);
 
-    draw_current_note_title(f, parent_layout[0]);
+    draw_current_note_title(f, parent_layout[0], list_state);
     draw_current_note_contents(f, parent_layout[1], list_state);
 }
 
-fn draw_current_note_title<B: Backend>(f: &mut Frame<B>, layout_chunk: Rect) {
-    let text = vec![Spans::from(vec![Span::styled(
-        "This is the title of the current note that was selected",
-        Style::default().add_modifier(Modifier::BOLD),
-    )])];
-    let paragraph = Paragraph::new(text)
+fn draw_current_note_title<B: Backend>(
+    f: &mut Frame<B>,
+    layout_chunk: Rect,
+    list_state: &mut NoteListEvents,
+) {
+
+    let mut text: Vec<Span> = Vec::new();
+    let note: Note; 
+
+    if let Some(id) = list_state.selected_note_id() {
+        note = db::get_note(id).expect("Unable to access the current selected note");
+        note.title.lines().for_each(|line| text.push(Span::raw(line)));
+    }
+
+    let paragraph_contents = vec![Spans::from(text)];
+
+    let paragraph = Paragraph::new(paragraph_contents)
         .alignment(Alignment::Left)
         .block(Block::default().borders(Borders::ALL).title("Title"))
         .wrap(Wrap { trim: true });
