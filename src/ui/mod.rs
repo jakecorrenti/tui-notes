@@ -9,14 +9,14 @@ use tui::{
 
 use super::{db, notes_list_events::NoteListEvents};
 
-pub fn draw<B: Backend>(f: &mut Frame<B>) {
+pub fn draw<B: Backend>(f: &mut Frame<B>, list_state: &mut NoteListEvents) {
     let chunks = Layout::default()
         .margin(1)
         .direction(Direction::Horizontal)
         .constraints([Constraint::Percentage(20), Constraint::Percentage(80)].as_ref())
         .split(f.size());
 
-    draw_notes_list(f, &chunks[0]);
+    draw_notes_list(f, &chunks[0], list_state);
 
     draw_current_note_panel(f, &chunks[1]);
 }
@@ -56,8 +56,7 @@ fn draw_current_note_contents<B: Backend>(f: &mut Frame<B>, layout_chunk: Rect) 
     f.render_widget(paragraph, layout_chunk);
 }
 
-fn draw_notes_list<B: Backend>(f: &mut Frame<B>, layout_chunk: &Rect) {
-    let mut list_state = NoteListEvents::new();
+fn draw_notes_list<B: Backend>(f: &mut Frame<B>, layout_chunk: &Rect, list_state: &mut NoteListEvents) {
 
     let notes = db::get_all_notes().expect("There was an error retrieving your notes");
 
