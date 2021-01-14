@@ -304,6 +304,7 @@ dependencies = [
  "crossterm",
  "rusqlite",
  "tui",
+ "unicode-width",
  "uuid",
 ]
 

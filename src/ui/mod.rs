@@ -7,9 +7,13 @@ use tui::{
     Frame,
 };
 
-use super::{db, note::Note, notes_list_events::NoteListEvents};
+use super::{db, note::Note, notes_list_events::NoteListEvents, NoteState};
 
-pub fn draw<B: Backend>(f: &mut Frame<B>, list_state: &mut NoteListEvents) {
+pub fn draw<B: Backend>(
+    f: &mut Frame<B>,
+    list_state: &mut NoteListEvents,
+    note_state: &mut NoteState,
+) {
     let chunks = Layout::default()
         .margin(1)
         .direction(Direction::Horizontal)
@@ -18,13 +22,14 @@ pub fn draw<B: Backend>(f: &mut Frame<B>, list_state: &mut NoteListEvents) {
 
     draw_notes_list(f, &chunks[0], list_state);
 
-    draw_current_note_panel(f, &chunks[1], list_state);
+    draw_current_note_panel(f, &chunks[1], list_state, note_state);
 }
 
 fn draw_current_note_panel<B: Backend>(
     f: &mut Frame<B>,
     layout_chunk: &Rect,
     list_state: &mut NoteListEvents,
+    note_state: &mut NoteState,
 ) {
     let parent_layout = Layout::default()
         .direction(Direction::Vertical)
@@ -32,7 +37,7 @@ fn draw_current_note_panel<B: Backend>(
         .split(*layout_chunk);
 
     draw_current_note_title(f, parent_layout[0], list_state);
-    draw_current_note_contents(f, parent_layout[1], list_state);
+    draw_current_note_contents(f, parent_layout[1], list_state, note_state);
 }
 
 fn draw_current_note_title<B: Backend>(
@@ -40,13 +45,14 @@ fn draw_current_note_title<B: Backend>(
     layout_chunk: Rect,
     list_state: &mut NoteListEvents,
 ) {
-
     let mut text: Vec<Span> = Vec::new();
-    let note: Note; 
+    let note: Note;
 
     if let Some(id) = list_state.selected_note_id() {
         note = db::get_note(id).expect("Unable to access the current selected note");
-        note.title.lines().for_each(|line| text.push(Span::raw(line)));
+        note.title
+            .lines()
+            .for_each(|line| text.push(Span::raw(line)));
     }
 
     let paragraph_contents = vec![Spans::from(text)];
@@ -63,13 +69,17 @@ fn draw_current_note_contents<B: Backend>(
     f: &mut Frame<B>,
     layout_chunk: Rect,
     list_state: &mut NoteListEvents,
+    note_state: &mut NoteState,
 ) {
+    let available_width_for_text = (layout_chunk.width - 2) as usize;
     let mut text: Vec<Span> = Vec::new();
     let note: Note;
 
     if let Some(id) = list_state.selected_note_id() {
         note = db::get_note(id).expect("Unable to access the current selected note");
-        note.contents.lines().for_each(|line| text.push(Span::raw(line)));
+        note.contents
+            .lines()
+            .for_each(|line| text.push(Span::raw(line)));
     }
 
     let paragraph_contents = vec![Spans::from(text)];
@@ -79,6 +89,11 @@ fn draw_current_note_contents<B: Backend>(
         .wrap(Wrap { trim: true });
 
     f.render_widget(paragraph, layout_chunk);
+
+    // current cursor location is incorrect because the note_state and the list_state are not
+    // synced
+    let cursor = note_state.cursor_loc(available_width_for_text);
+    f.set_cursor(layout_chunk.x + 1 + cursor.0, layout_chunk.y + 1 + cursor.1);
 }
 
 fn draw_notes_list<B: Backend>(
