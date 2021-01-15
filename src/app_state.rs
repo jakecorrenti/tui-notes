@@ -36,6 +36,13 @@ impl AppState {
         }
     }
 
+    pub fn selected_note_id(&self) -> Option<String> {
+        if let Some(idx) = self.list_state.selected() {
+            return Some(self.notes[idx].id.clone());
+        }
+        None
+    }
+
     pub fn cursor_loc(&mut self, frame_width: usize) -> (u16, u16) {
         let mut pos = (0, 0);
         pos

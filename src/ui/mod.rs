@@ -46,12 +46,12 @@ fn draw_current_note_title<B: Backend>(
     let mut text: Vec<Span> = Vec::new();
     let note: Note;
 
-    /* if let Some(id) = list_state.selected_note_id() {
-     *     note = db::get_note(id).expect("Unable to access the current selected note");
-     *     note.title
-     *         .lines()
-     *         .for_each(|line| text.push(Span::raw(line)));
-     * } */
+    if let Some(id) = state.selected_note_id() {
+        note = db::get_note(id).expect("Unable to access the current selected note");
+        note.title
+            .lines()
+            .for_each(|line| text.push(Span::raw(line)));
+    }
 
     let paragraph_contents = vec![Spans::from(text)];
 
@@ -72,12 +72,12 @@ fn draw_current_note_contents<B: Backend>(
     let mut text: Vec<Span> = Vec::new();
     let note: Note;
 
-    /* if let Some(id) = list_state.selected_note_id() {
-     *     note = db::get_note(id).expect("Unable to access the current selected note");
-     *     note.contents
-     *         .lines()
-     *         .for_each(|line| text.push(Span::raw(line)));
-     * } */
+    if let Some(id) = state.selected_note_id() {
+        note = db::get_note(id).expect("Unable to access the current selected note");
+        note.contents
+            .lines()
+            .for_each(|line| text.push(Span::raw(line)));
+    }
 
     let paragraph_contents = vec![Spans::from(text)];
     let paragraph = Paragraph::new(paragraph_contents)
