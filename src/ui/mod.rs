@@ -7,12 +7,11 @@ use tui::{
     Frame,
 };
 
-use super::{db, note::Note, notes_list_events::NoteListEvents, NoteState};
+use super::{db, note::Note, AppState};
 
 pub fn draw<B: Backend>(
     f: &mut Frame<B>,
-    list_state: &mut NoteListEvents,
-    note_state: &mut NoteState,
+    state: &mut AppState,
 ) {
     let chunks = Layout::default()
         .margin(1)
@@ -20,40 +19,39 @@ pub fn draw<B: Backend>(
         .constraints([Constraint::Percentage(20), Constraint::Percentage(80)].as_ref())
         .split(f.size());
 
-    draw_notes_list(f, &chunks[0], list_state);
+    draw_notes_list(f, &chunks[0], state);
 
-    draw_current_note_panel(f, &chunks[1], list_state, note_state);
+    draw_current_note_panel(f, &chunks[1], state);
 }
 
 fn draw_current_note_panel<B: Backend>(
     f: &mut Frame<B>,
     layout_chunk: &Rect,
-    list_state: &mut NoteListEvents,
-    note_state: &mut NoteState,
+    state: &mut AppState,
 ) {
     let parent_layout = Layout::default()
         .direction(Direction::Vertical)
         .constraints([Constraint::Percentage(10), Constraint::Percentage(90)].as_ref())
         .split(*layout_chunk);
 
-    draw_current_note_title(f, parent_layout[0], list_state);
-    draw_current_note_contents(f, parent_layout[1], list_state, note_state);
+    draw_current_note_title(f, parent_layout[0], state);
+    draw_current_note_contents(f, parent_layout[1], state);
 }
 
 fn draw_current_note_title<B: Backend>(
     f: &mut Frame<B>,
     layout_chunk: Rect,
-    list_state: &mut NoteListEvents,
+    state: &mut AppState,
 ) {
     let mut text: Vec<Span> = Vec::new();
     let note: Note;
 
-    if let Some(id) = list_state.selected_note_id() {
-        note = db::get_note(id).expect("Unable to access the current selected note");
-        note.title
-            .lines()
-            .for_each(|line| text.push(Span::raw(line)));
-    }
+    /* if let Some(id) = list_state.selected_note_id() {
+     *     note = db::get_note(id).expect("Unable to access the current selected note");
+     *     note.title
+     *         .lines()
+     *         .for_each(|line| text.push(Span::raw(line)));
+     * } */
 
     let paragraph_contents = vec![Spans::from(text)];
 
@@ -68,19 +66,18 @@ fn draw_current_note_title<B: Backend>(
 fn draw_current_note_contents<B: Backend>(
     f: &mut Frame<B>,
     layout_chunk: Rect,
-    list_state: &mut NoteListEvents,
-    note_state: &mut NoteState,
+    state: &mut AppState,
 ) {
     let available_width_for_text = (layout_chunk.width - 2) as usize;
     let mut text: Vec<Span> = Vec::new();
     let note: Note;
 
-    if let Some(id) = list_state.selected_note_id() {
-        note = db::get_note(id).expect("Unable to access the current selected note");
-        note.contents
-            .lines()
-            .for_each(|line| text.push(Span::raw(line)));
-    }
+    /* if let Some(id) = list_state.selected_note_id() {
+     *     note = db::get_note(id).expect("Unable to access the current selected note");
+     *     note.contents
+     *         .lines()
+     *         .for_each(|line| text.push(Span::raw(line)));
+     * } */
 
     let paragraph_contents = vec![Spans::from(text)];
     let paragraph = Paragraph::new(paragraph_contents)
@@ -92,25 +89,23 @@ fn draw_current_note_contents<B: Backend>(
 
     // current cursor location is incorrect because the note_state and the list_state are not
     // synced
-    let cursor = note_state.cursor_loc(available_width_for_text);
+    let cursor = state.cursor_loc(available_width_for_text);
     f.set_cursor(layout_chunk.x + 1 + cursor.0, layout_chunk.y + 1 + cursor.1);
 }
 
 fn draw_notes_list<B: Backend>(
     f: &mut Frame<B>,
     layout_chunk: &Rect,
-    list_state: &mut NoteListEvents,
+    state: &mut AppState,
 ) {
     let notes = db::get_all_notes().expect("There was an error retrieving your notes");
 
-    notes
-        .iter()
-        .for_each(|note| list_state.add_note(note.id.clone(), note.title.clone()));
+    state.notes = notes;
 
-    let list_items: Vec<ListItem> = list_state
+    let list_items: Vec<ListItem> = state
         .notes
         .iter()
-        .map(|note| ListItem::new(&note.1[..]))
+        .map(|note| ListItem::new(&note.title[..]))
         .collect();
 
     let list = List::new(list_items)
@@ -122,5 +117,5 @@ fn draw_notes_list<B: Backend>(
                 .add_modifier(Modifier::BOLD),
         );
 
-    f.render_stateful_widget(list, *layout_chunk, &mut list_state.state);
+    f.render_stateful_widget(list, *layout_chunk, &mut state.list_state);
 }

@@ -1,4 +1,4 @@
-use super::{db, Note, NoteListEvents, NoteState};
+use super::{db, Note, AppState};
 use crossterm::{
     event::{poll, read, Event, KeyCode, KeyModifiers},
     execute,
@@ -10,8 +10,7 @@ use std::{
 };
 
 pub fn handle_notes_list_events(
-    list_state: &mut NoteListEvents,
-    note_state: &mut NoteState,
+    state: &mut AppState,
 ) -> Result<(), Box<dyn std::error::Error>> {
     if poll(Duration::from_millis(500))? {
         match read()? {
@@ -19,25 +18,25 @@ pub fn handle_notes_list_events(
                 if event.modifiers == KeyModifiers::CONTROL {
                     match event.code {
                         KeyCode::Char('j') => {
-                            list_state.next();
+                            state.next_note();
                         },
                         KeyCode::Char('k') => {
-                            list_state.previous();
+                            state.previous_note();
                         },
                         KeyCode::Char('d') => {
-                            if let Some(selected_note) = list_state.selected_note_id() {
-                                let note = db::get_note(selected_note)?;
-                                db::delete_note(note)?;
-                            }
+                            /* if let Some(selected_note) = list_state.selected_note_id() {
+                             *     let note = db::get_note(selected_note)?;
+                             *     db::delete_note(note)?;
+                             * } */
                         },
                         KeyCode::Char('n') => {
                             db::insert_note(Note::new())?;
                         },
                         KeyCode::Char('w') => {
-                            if let Some(selected_note) = list_state.selected_note_id() {
-                                let note = db::get_note(selected_note)?;
-                                db::update_note(note)?;
-                            }
+                            /* if let Some(selected_note) = list_state.selected_note_id() {
+                             *     let note = db::get_note(selected_note)?;
+                             *     db::update_note(note)?;
+                             * } */
                         },
                         KeyCode::Char('t') => {
                             //TODO: focus the input cursor on the title 
