@@ -44,7 +44,7 @@ impl AppState {
         None
     }
 
-    pub fn cursor_loc(&mut self, frame_width: usize) -> (u16, u16) {
+    pub fn content_cursor_loc(&mut self, frame_width: usize) -> (u16, u16) {
         let mut pos = (0, 0);
 
         let x = pos.0 as u16;

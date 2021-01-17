@@ -89,7 +89,7 @@ fn draw_current_note_contents<B: Backend>(
 
     // current cursor location is incorrect because the note_state and the list_state are not
     // synced
-    let cursor_loc = state.cursor_loc(available_width_for_text);
+    let cursor_loc = state.content_cursor_loc(available_width_for_text);
 
     // takes the coordinate of the frame, adds the cursor position in the respective direction,
     // then adds 1 to account for the space where the next character will be entered
