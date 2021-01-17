@@ -51,6 +51,17 @@ pub fn handle_notes_list_events(state: &mut AppState) -> Result<(), Box<dyn std:
                     }
                 } else {
                     match event.code {
+                        KeyCode::Enter => {
+                            /* state.current_note_chars.push('\n');
+                             * if let Some(selected_note) = state.selected_note_id() {
+                             *     let note = db::get_note(selected_note)?;
+                             *     let mut updated_note_contents = String::new();
+                             *     state.current_note_chars.iter().for_each(|character| {
+                             *         updated_note_contents.push(*character);
+                             *     });
+                             *     db::update_note(updated_note_contents, note)?;
+                             * } */
+                        },
                         KeyCode::Backspace => {
                             state.current_note_chars.pop();
                             if let Some(selected_note) = state.selected_note_id() {
