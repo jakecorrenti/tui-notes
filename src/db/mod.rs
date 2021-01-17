@@ -35,11 +35,11 @@ pub fn get_note(id: String) -> Result<Note> {
     })
 }
 
-pub fn update_note(note: Note) -> Result<()> {
+pub fn update_note(contents: String, note: Note) -> Result<()> {
     let db = Connection::open(&DB[..])?;
     db.execute(
-        "UPDATE notes SET id=(?1) title=(?2) contents=(?3) WHERE id=(?1)",
-        &[&note.id, &note.title, &note.contents],
+        "UPDATE notes SET contents=(?1) WHERE id=(?2)",
+        &[&contents, &note.id],
     )?;
     Ok(())
 }

@@ -24,10 +24,10 @@ pub fn handle_notes_list_events(
                             state.previous_note();
                         },
                         KeyCode::Char('d') => {
-                            /* if let Some(selected_note) = list_state.selected_note_id() {
-                             *     let note = db::get_note(selected_note)?;
-                             *     db::delete_note(note)?;
-                             * } */
+                            if let Some(selected_note) = state.selected_note_id() {
+                                let note = db::get_note(selected_note)?;
+                                db::delete_note(note)?;
+                            }
                         },
                         KeyCode::Char('n') => {
                             db::insert_note(Note::new())?;
@@ -53,8 +53,19 @@ pub fn handle_notes_list_events(
                     }
                 } else {
                     match event.code {
+                        //TODO: Implement a simple pop function to remove the last character from
+                        //the list of characters in the app state
+                        KeyCode::Backspace => (),
                         KeyCode::Char(character) => {
-                            // add the character to the note's contents
+                            state.current_note_chars.push(character);
+                            if let Some(selected_note) = state.selected_note_id() {
+                                let note = db::get_note(selected_note)?;
+                                let mut updated_note_contents = String::new();
+                                state.current_note_chars.iter().for_each(|character| {
+                                    updated_note_contents.push(*character);
+                                });
+                                db::update_note(updated_note_contents, note)?;
+                            }
                         },
                         _ => (),
                     }

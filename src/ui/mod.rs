@@ -89,8 +89,13 @@ fn draw_current_note_contents<B: Backend>(
 
     // current cursor location is incorrect because the note_state and the list_state are not
     // synced
-    let cursor = state.cursor_loc(available_width_for_text);
-    f.set_cursor(layout_chunk.x + 1 + cursor.0, layout_chunk.y + 1 + cursor.1);
+    let cursor_loc = state.cursor_loc(available_width_for_text);
+
+    // takes the coordinate of the frame, adds the cursor position in the respective direction,
+    // then adds 1 to account for the space where the next character will be entered
+    let x_offset = layout_chunk.x + cursor_loc.0 + 1;
+    let y_offset = layout_chunk.y + cursor_loc.1 + 1;
+    f.set_cursor(x_offset, y_offset);
 }
 
 fn draw_notes_list<B: Backend>(
