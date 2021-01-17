@@ -1,6 +1,5 @@
 use super::note::Note;
 use tui::{layout::Rect, widgets::ListState};
-
 #[derive(Debug, Default)]
 pub struct AppState {
     pub list_state: ListState,
@@ -53,7 +52,7 @@ impl AppState {
         (x, y)
     }
 
-    fn set_current_note_chars(&mut self) {
+    pub fn set_current_note_chars(&mut self) {
         self.current_note_chars.clear();
         if let Some(id) = self.selected_note_id() {
             let note = crate::db::get_note(id).expect("Unable to access the current selected note");
