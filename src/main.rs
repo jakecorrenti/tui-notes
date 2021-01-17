@@ -16,6 +16,7 @@ use app_state::AppState;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     db::create_notes_table()?;
+
     let stdout = io::stdout();
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
@@ -24,7 +25,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     enable_raw_mode()?;
     execute!(io::stdout(), EnterAlternateScreen)?;
+
     app_state.list_state.select(Some(0));
+
     loop {
         terminal.draw(|f| {
             ui::draw(f, &mut app_state);
