@@ -33,7 +33,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ui::draw(f, &mut app_state);
         })?;
 
-        app_state.set_current_note_chars();
+        app_state.set_current_content_chars();
+        app_state.set_current_title_chars();
         events::keyboard::handle_notes_list_events(&mut app_state)?;
         app_state.notes.clear();
     }
