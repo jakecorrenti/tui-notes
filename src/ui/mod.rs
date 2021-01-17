@@ -39,8 +39,7 @@ fn draw_current_note_panel<B: Backend>(
 }
 
 fn draw_current_note_title<B: Backend>(
-    f: &mut Frame<B>,
-    layout_chunk: Rect,
+    f: &mut Frame<B>, layout_chunk: Rect,
     state: &mut AppState,
 ) {
     let mut text: Vec<Span> = Vec::new();

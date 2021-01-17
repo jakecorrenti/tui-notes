@@ -9,6 +9,8 @@ use std::{
     time::Duration,
 };
 
+use crate::app_state::FocusedBlock;
+
 pub fn handle_notes_list_events(state: &mut AppState) -> Result<(), Box<dyn std::error::Error>> {
     if poll(Duration::from_millis(500))? {
         match read()? {
@@ -30,17 +32,11 @@ pub fn handle_notes_list_events(state: &mut AppState) -> Result<(), Box<dyn std:
                         KeyCode::Char('n') => {
                             db::insert_note(Note::new())?;
                         }
-                        KeyCode::Char('w') => {
-                            /* if let Some(selected_note) = list_state.selected_note_id() {
-                             *     let note = db::get_note(selected_note)?;
-                             *     db::update_note(note)?;
-                             * } */
-                        }
                         KeyCode::Char('t') => {
-                            //TODO: focus the input cursor on the title
+                            state.focused = FocusedBlock::TITLE;
                         }
                         KeyCode::Char('c') => {
-                            //TODO: focus the input cursor on the contents
+                            state.focused = FocusedBlock::CONTENTS;
                         }
                         KeyCode::Char('q') => {
                             disable_raw_mode()?;
@@ -51,39 +47,24 @@ pub fn handle_notes_list_events(state: &mut AppState) -> Result<(), Box<dyn std:
                     }
                 } else {
                     match event.code {
-                        KeyCode::Enter => {
-                            /* state.current_note_chars.push('\n');
-                             * if let Some(selected_note) = state.selected_note_id() {
-                             *     let note = db::get_note(selected_note)?;
-                             *     let mut updated_note_contents = String::new();
-                             *     state.current_note_chars.iter().for_each(|character| {
-                             *         updated_note_contents.push(*character);
-                             *     });
-                             *     db::update_note(updated_note_contents, note)?;
-                             * } */
+                        // TODO
+                        KeyCode::Enter => {}
+                        KeyCode::Backspace => match state.focused {
+                            FocusedBlock::TITLE => {
+                                state.rmv_character_from_title()?;
+                            }
+                            FocusedBlock::CONTENTS => {
+                                state.rmv_character_from_content()?;
+                            }
+                        }
+                        KeyCode::Char(character) => match state.focused {
+                            FocusedBlock::TITLE => {
+                                state.add_character_to_title(character)?;
+                            }
+                            FocusedBlock::CONTENTS => {
+                                state.add_character_to_content(character)?;
+                            }
                         },
-                        KeyCode::Backspace => {
-                            state.current_note_chars.pop();
-                            if let Some(selected_note) = state.selected_note_id() {
-                                let note = db::get_note(selected_note)?;
-                                let mut updated_note_contents = String::new();
-                                state.current_note_chars.iter().for_each(|character| {
-                                    updated_note_contents.push(*character);
-                                });
-                                db::update_note(updated_note_contents, note)?;
-                            }
-                        }
-                        KeyCode::Char(character) => {
-                            state.current_note_chars.push(character);
-                            if let Some(selected_note) = state.selected_note_id() {
-                                let note = db::get_note(selected_note)?;
-                                let mut updated_note_contents = String::new();
-                                state.current_note_chars.iter().for_each(|character| {
-                                    updated_note_contents.push(*character);
-                                });
-                                db::update_note(updated_note_contents, note)?;
-                            }
-                        }
                         _ => (),
                     }
                 }
