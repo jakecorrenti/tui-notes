@@ -47,8 +47,9 @@ pub fn handle_notes_list_events(state: &mut AppState) -> Result<(), Box<dyn std:
                     }
                 } else {
                     match event.code {
-                        // TODO
-                        KeyCode::Enter => {}
+                        KeyCode::Enter => {
+                            // TODO: Implement
+                        },
                         KeyCode::Backspace => match state.focused {
                             FocusedBlock::TITLE => {
                                 state.rmv_character_from_title()?;
