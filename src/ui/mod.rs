@@ -9,10 +9,7 @@ use tui::{
 
 use super::{db, note::Note, AppState};
 
-pub fn draw<B: Backend>(
-    f: &mut Frame<B>,
-    state: &mut AppState,
-) {
+pub fn draw<B: Backend>(f: &mut Frame<B>, state: &mut AppState) {
     let chunks = Layout::default()
         .margin(1)
         .direction(Direction::Horizontal)
@@ -38,10 +35,7 @@ fn draw_current_note_panel<B: Backend>(
     draw_current_note_contents(f, parent_layout[1], state);
 }
 
-fn draw_current_note_title<B: Backend>(
-    f: &mut Frame<B>, layout_chunk: Rect,
-    state: &mut AppState,
-) {
+fn draw_current_note_title<B: Backend>(f: &mut Frame<B>, layout_chunk: Rect, state: &mut AppState) {
     let mut text: Vec<Span> = Vec::new();
     let note: Note;
 
@@ -97,11 +91,7 @@ fn draw_current_note_contents<B: Backend>(
     f.set_cursor(x_offset, y_offset);
 }
 
-fn draw_notes_list<B: Backend>(
-    f: &mut Frame<B>,
-    layout_chunk: &Rect,
-    state: &mut AppState,
-) {
+fn draw_notes_list<B: Backend>(f: &mut Frame<B>, layout_chunk: &Rect, state: &mut AppState) {
     let notes = db::get_all_notes().expect("There was an error retrieving your notes");
 
     state.notes = notes;

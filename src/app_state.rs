@@ -76,7 +76,9 @@ impl AppState {
     pub fn set_current_content_chars(&mut self) {
         self.current_content_chars.clear();
         if let Some(id) = self.selected_note_id() {
-            let note = crate::db::get_note(id).expect("Unable to access the current selected note");
+            let note = crate::db::get_note(id).expect(
+                "Unable to access the current selected note"
+            );
             note.contents.chars().for_each(|c| {
                 self.current_content_chars.push(c);
             });
@@ -86,7 +88,9 @@ impl AppState {
     pub fn set_current_title_chars(&mut self) {
         self.current_title_chars.clear();
         if let Some(id) = self.selected_note_id() {
-            let note = crate::db::get_note(id).expect("Unable to access the current selected note");
+            let note = crate::db::get_note(id).expect(
+                "Unable to access the current selected note"
+            );
             note.title.chars().for_each(|c| {
                 self.current_title_chars.push(c);
             });
